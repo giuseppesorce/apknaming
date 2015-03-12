@@ -1,0 +1,72 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.0.0"
+
+    defaultConfig {
+        applicationId "com.gsorce.buildapknaming"
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 14
+        versionName "1.0"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("mykey.jks")
+            storePassword "topolino"
+            keyAlias "key"
+            keyPassword "topolino"
+        }
+    }
+
+
+
+ /*   buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    output.outputFile = new File(
+                            output.outputFile.parent,
+                            (String) output.outputFile.name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk"))
+
+                }
+            }
+
+        }
+    }
+    */
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            applicationVariants.all { variant ->
+                def variants = variant.baseName.split("-");
+                def apkName = "myapp-";
+                apkName += variants[0];
+                apkName += "-"+variant.versionName;
+                apkName += "-"+variant.versionCode;
+                apkName += "-"+getDate();
+                apkName+=".apk"
+                variant.outputs.each { output ->
+                    output.outputFile = new File(
+                            output.outputFile.parent,
+                            (String)output.outputFile.name.replace(output.outputFile.name, (String)apkName))
+
+                }
+            }
+        }
+    }
+}
+
+def getDate() {
+    def dateNow = new Date()
+    def formattedDate = dateNow.format('yyyy-MM-dd_HH-mm-ss')
+    return formattedDate
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:21.+'
+}
